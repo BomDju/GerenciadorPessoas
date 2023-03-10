@@ -1,10 +1,10 @@
 package br.com.Attornatus.GerenciadorPessoas.service;
 
 import java.net.URI;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,9 +28,9 @@ public class PessoaService {
 	@Autowired
 	private EnderecoRepositry enderecoRepositry;
 	
-	public List<ListarPessoaDto> listarPessoas (){
-		List<Pessoa> pessoas = pessoaRespository.findAll();
-		return pessoas.stream().map(ListarPessoaDto::new).collect(Collectors.toList());
+	public Page<ListarPessoaDto> listarPessoas (Pageable pageable){
+		Page<Pessoa> pessoas = pessoaRespository.findAll(pageable);
+		return pessoas.map(ListarPessoaDto::new);
 	}
 	
 	public ResponseEntity<ListarPessoaDto> criar (CriarPessoaForm form, UriComponentsBuilder uriBuilder) {
@@ -50,13 +50,19 @@ public class PessoaService {
 		p.setDataNascimento(form.getDataNascimento());
 		pessoaRespository.save(p);
 		return ResponseEntity.ok(new ListarPessoaDto(p));
-		
 	}
 	
 	public ResponseEntity<ConsultarPessoaDto> consultarPessoa(Integer id, UriComponentsBuilder uriBuilder) {
-		Pessoa p =  pessoaRespository.findById(id).orElseThrow(() -> new EntityNotFoundException("O Id informado não foi econtrado " + id));;
-		
+		Pessoa p =  pessoaRespository.findById(id).orElseThrow(() -> new EntityNotFoundException("O Id informado não foi econtrado " + id));
 		URI uri = uriBuilder.path("/pessoas/{id}").buildAndExpand(p.getId()).toUri();
 		return ResponseEntity.created(uri).body(new ConsultarPessoaDto(p));
 	}
+	
+	public ResponseEntity<?> deletarPessoa(Integer id){
+		Pessoa p =  pessoaRespository.findById(id).orElseThrow(() -> new EntityNotFoundException("O Id informado não foi econtrado " + id));
+		pessoaRespository.delete(p);
+		return ResponseEntity.ok().build();
+	}
+	
+	
 }

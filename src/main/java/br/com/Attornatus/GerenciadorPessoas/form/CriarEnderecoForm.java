@@ -1,6 +1,5 @@
 package br.com.Attornatus.GerenciadorPessoas.form;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
@@ -9,7 +8,6 @@ public class CriarEnderecoForm {
 	@NotBlank
 	private String logadouro;
 	
-	@Max(value = 8)
 	@Min (value = 8)
 	private Integer cep;
 	

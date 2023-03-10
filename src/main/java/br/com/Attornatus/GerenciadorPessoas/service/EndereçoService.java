@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -26,9 +28,9 @@ public class EndereçoService {
 	@Autowired
 	PessoaRepository pessoaRepository;
 
-	public List<ListarEnderecoDto> listar(Integer id) {
-		List<Endereco> e =  enderecoRepositry.findAllEnderecoByIdPessoa(id);
-		return e.stream().map(ListarEnderecoDto::new).collect(Collectors.toList());
+	public Page<ListarEnderecoDto> listar(Integer id, Pageable pageable) {
+		Page<Endereco> endereco =  enderecoRepositry.findAllEnderecoByIdPessoa(id, pageable);
+		return endereco.map(ListarEnderecoDto::new);
 	}
 
 	public ResponseEntity<ListarEnderecoDto> criar(CriarEnderecoForm form, Integer id, UriComponentsBuilder uriBilder){
